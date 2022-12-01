@@ -13,26 +13,50 @@ paths:
       description: Retrieves the translation for a given text
       operationId: language_sloth_rest_libretranslate_get
       parameters:
-      - name: text
-        in: query
-        description: text to translate
-        required: true
-        style: form
-        explode: true
-        schema:
-          type: string
-        examples:
-          text:
-            summary: Retrieve translation for a given text
-            value: Hello World!
+        - name: text
+          in: query
+          description: text to translate
+          required: true
+          style: form
+          explode: true
+          schema:
+            type: string
+          examples:
+            text:
+              summary: Retrieve translation for a given text
+              value: Hello World!
+        - name: sourceLanguage
+          in: query
+          description: source language of the text
+          required: true
+          style: form
+          explode: true
+          schema:
+            type: string
+          examples:
+            text:
+              summary: source language of the text
+              value: de
+        - name: targetLanguage
+          in: query
+          description: target language of the text
+          required: true
+          style: form
+          explode: true
+          schema:
+            type: string
+          examples:
+            text:
+              summary: target language of the text
+              value: en
       responses:
         "200":
           description: Translation was done successfully
           content:
-            text/plain:
+            application/json:
               schema:
                 type: string
-                x-content-type: text/plain; charset=utf-8
+                x-content-type: application/json
         "500":
           description: Translation failed
           content:
