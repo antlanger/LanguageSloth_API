@@ -66,6 +66,37 @@ paths:
                 example: "Error 500: Internal Server Error - Reason"
                 x-content-type: text/plain; charset=utf-8
       x-openapi-router-controller: swagger_server.controllers.libretranslate_get_controller
-components:
-  schemas: {}
+  /convertInputToWav:
+    post:
+      tags:
+      - Convert input audio to WAV
+      description: Converts input audio to WAV
+      operationId: language_sloth_rest_convertInputToWav_post
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: Conversion to WAV was done successfully
+          content:
+            application/json:
+              schema:
+                type: string
+                x-content-type: application/json
+        "500":
+          description: Conversion to WAV failed
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Error 500: Internal Server Error - Reason"
+                x-content-type: text/plain; charset=utf-8
+      x-openapi-router-controller: swagger_server.controllers.convertInputToWav_post_controller
+components: {}
 
