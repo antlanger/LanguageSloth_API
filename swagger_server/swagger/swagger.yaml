@@ -81,6 +81,10 @@ paths:
                 file:
                   type: string
                   format: binary
+                inputLanguage:
+                  type: string
+                targetLanguage:
+                  type: string
       responses:
         "200":
           description: Conversion to WAV was done successfully
