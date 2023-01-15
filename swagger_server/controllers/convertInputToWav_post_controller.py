@@ -41,7 +41,6 @@ def language_sloth_rest_convertInputToWav_post(file=None, input_language=None, t
     if file.filename == '':
         return {"status": "No file selected!"}, 404
 
-    #192.168.0.227
     stt_url = 'http://languagesloth_tts:5000/speech_to_text'
     data = {'lang': 'de'}
 
@@ -51,11 +50,8 @@ def language_sloth_rest_convertInputToWav_post(file=None, input_language=None, t
     if file:
         with open(webm_path, "wb") as fp:
             fp.write(file.read())
-
-        AudioSegment.from_file(webm_path).set_frame_rate(16000).export(wav_path, format="wav")
-
         
-        with open(wav_path, "r+b") as f:
+        with open(webm_path, "r+b") as f:
             r = requests.post(stt_url, files={'file': f}, data=data)
             print(r.text, flush=True)
             return r.text
