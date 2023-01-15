@@ -12,8 +12,6 @@ from io import BytesIO
 
 from flask import Flask, request, send_file, make_response
 
-from libretranslate_get_controller import language_sloth_rest_libretranslate_get
-
 UPLOAD_FOLDER = './files'
 
 
