@@ -12,6 +12,8 @@ from io import BytesIO
 
 from flask import Flask, request, send_file, make_response
 
+from libretranslate_get_controller import language_sloth_rest_libretranslate_get
+
 UPLOAD_FOLDER = './files'
 
 
@@ -44,8 +46,8 @@ def language_sloth_rest_convertInputToWav_post(file=None, input_language=None, t
     if file.filename == '':
         return {"status": "No file selected!"}, 404
 
-    stt_url = 'http://languagesloth_tts:5000/speech_to_text'
-    tts_url = 'http://languagesloth_tts:5000/text_to_speech'
+    stt_url = 'http://languagesloth_tts:5001/speech_to_text'
+    tts_url = 'http://languagesloth_tts:5001/text_to_speech'
 
     webm_path = os.path.join(UPLOAD_FOLDER, "recording.webm")
     wav_path = os.path.join(UPLOAD_FOLDER, "recording.wav")
@@ -61,17 +63,14 @@ def language_sloth_rest_convertInputToWav_post(file=None, input_language=None, t
         
 
         # TODO Send received text to LibreTranslate
+        translation = language_sloth_rest_libretranslate_get(response_stt.text, input_lang, output_lang)
 
-        # TODO Send translated text to CoquiTTS
-        data = {'lang': input_lang, 'text': response_stt.text} #TODO change to output_lang when libretranslate works
+        data = {'lang': output_lang, 'text': translation} #TODO change to output_lang when libretranslate works
         response_tts = requests.post(tts_url, data=data)
         response_file = response_tts.content
 
         with open(wav_path, "wb") as fp:
             fp.write(response_file)
-
-
-        # TODO Return output audio to frontend
 
         AudioSegment.from_file(wav_path).export(webm_path, format="webm")
         

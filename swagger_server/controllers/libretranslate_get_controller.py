@@ -22,7 +22,7 @@ def language_sloth_rest_libretranslate_get(text, source_language, target_languag
     """
 
     #Call the translation
-    url = 'http://10.191.17.178:5000/translate'
+    url = 'http://languagesloth_libretranslate:5000/translate'
     params = {'q': text, 'source': source_language, 'target': target_language, 'format':'text'}
 
     jsonResponse =  requests.post(url=url, data=params)
