@@ -5,6 +5,7 @@ import six
 import requests
 import json
 import flask
+from pydub import AudioSegment
 
 from swagger_server import util
 from io import BytesIO
@@ -41,16 +42,22 @@ def language_sloth_rest_convertInputToWav_post(file=None, input_language=None, t
         return {"status": "No file selected!"}, 404
 
     #192.168.0.227
-    stt_url = 'http://languagesloth_stt:5000/speech_to_text'
+    stt_url = 'http://languagesloth_tts:5000/speech_to_text'
     data = {'lang': 'de'}
 
+    webm_path = os.path.join(UPLOAD_FOLDER, "recording.webm")
+    wav_path = os.path.join(UPLOAD_FOLDER, "recording.wav")
+
     if file:
-        with open(os.path.join(UPLOAD_FOLDER, "recording.wav"), "wb") as fp:
+        with open(webm_path, "wb") as fp:
             fp.write(file.read())
+
+        AudioSegment.from_file(webm_path).set_frame_rate(16000).export(wav_path, format="wav")
+
         
-        with open(os.path.join(UPLOAD_FOLDER, "recording.wav"), "rb") as f:
+        with open(wav_path, "r+b") as f:
             r = requests.post(stt_url, files={'file': f}, data=data)
-            print(r.text)
+            print(r.text, flush=True)
             return r.text
         
             
@@ -65,14 +72,14 @@ def language_sloth_rest_convertInputToWav_post(file=None, input_language=None, t
         # TODO Send received text to LibreTranslate
         # TODO Send translated text to CoquiTTS
         # TODO Return output audio to frontend
-        path_test = "/usr/src/app/files/recording.wav"
+
+        AudioSegment.from_file(wav_path).export(webm_path, format="webm")
         
-        
-        
+        webm_path = "/usr/src/app/files/recording.webm"
         return send_file(
-         path_test, 
-         mimetype="audio/wav", 
+         webm_path, 
+         mimetype="audio/webm", 
          as_attachment=True, 
-         attachment_filename="translatedRecording.wav")
+         attachment_filename="translatedRecording.webm")
 
     return ('No file found!')
