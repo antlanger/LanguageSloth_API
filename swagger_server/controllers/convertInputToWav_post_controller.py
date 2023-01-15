@@ -37,12 +37,15 @@ def language_sloth_rest_convertInputToWav_post(file=None, input_language=None, t
         return {"status": "No file included!"}, 409
 
     file = request.files['file']
+    input_lang = request.form['inputLanguage']
+    output_lang = request.form['inputLanguage']
+    print(input_lang, flush=True)
 
     if file.filename == '':
         return {"status": "No file selected!"}, 404
 
     stt_url = 'http://languagesloth_tts:5000/speech_to_text'
-    data = {'lang': 'de'}
+    tts_url = 'http://languagesloth_tts:5000/text_to_speech'
 
     webm_path = os.path.join(UPLOAD_FOLDER, "recording.webm")
     wav_path = os.path.join(UPLOAD_FOLDER, "recording.wav")
@@ -51,22 +54,23 @@ def language_sloth_rest_convertInputToWav_post(file=None, input_language=None, t
         with open(webm_path, "wb") as fp:
             fp.write(file.read())
         
-        with open(webm_path, "r+b") as f:
-            r = requests.post(stt_url, files={'file': f}, data=data)
-            print(r.text, flush=True)
-            return r.text
+        with open(webm_path, "rb") as f:
+            data = {'lang': input_lang}
+            response_stt = requests.post(stt_url, files={'file': f}, data=data)
+            print(f"TEXT: {response_stt.text}", flush=True)
         
-            
-        
-        # TODO Send WAV to CoquiSST
-
-        
-
-
-
 
         # TODO Send received text to LibreTranslate
+
         # TODO Send translated text to CoquiTTS
+        data = {'lang': input_lang, 'text': response_stt.text} #TODO change to output_lang when libretranslate works
+        response_tts = requests.post(tts_url, data=data)
+        response_file = response_tts.content
+
+        with open(wav_path, "wb") as fp:
+            fp.write(response_file)
+
+
         # TODO Return output audio to frontend
 
         AudioSegment.from_file(wav_path).export(webm_path, format="webm")
