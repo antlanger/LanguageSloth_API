@@ -38,7 +38,7 @@ def language_sloth_rest_convertInputToWav_post(file=None, input_language=None, t
 
     file = request.files['file']
     input_lang = request.form['inputLanguage']
-    output_lang = request.form['inputLanguage']
+    output_lang = request.form['targetLanguage']
     print(input_lang, flush=True)
 
     if file.filename == '':
@@ -46,6 +46,7 @@ def language_sloth_rest_convertInputToWav_post(file=None, input_language=None, t
 
     stt_url = 'http://languagesloth_tts:5001/speech_to_text'
     tts_url = 'http://languagesloth_tts:5001/text_to_speech'
+    libre_url = 'http://languagesloth_libretranslate:5000/translate'
 
     webm_path = os.path.join(UPLOAD_FOLDER, "recording.webm")
     wav_path = os.path.join(UPLOAD_FOLDER, "recording.wav")
@@ -61,9 +62,15 @@ def language_sloth_rest_convertInputToWav_post(file=None, input_language=None, t
         
 
         # TODO Send received text to LibreTranslate
-        translation = language_sloth_rest_libretranslate_get(response_stt.text, input_lang, output_lang)
+        params = {'q': response_stt.text, 'source': input_lang, 'target': output_lang, 'format':'text'}
 
-        data = {'lang': output_lang, 'text': translation} #TODO change to output_lang when libretranslate works
+        jsonResponse =  requests.post(url=libre_url, data=params)
+        stringResponse = json.loads(jsonResponse.content)
+        translatedText = stringResponse["translatedText"]
+
+        print(f"Translated text: {translatedText}", flush=True)
+
+        data = {'lang': output_lang, 'text': translatedText} #TODO change to output_lang when libretranslate works
         response_tts = requests.post(tts_url, data=data)
         response_file = response_tts.content
 
