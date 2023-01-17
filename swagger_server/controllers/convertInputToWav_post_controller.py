@@ -44,8 +44,8 @@ def language_sloth_rest_convertInputToWav_post(file=None, input_language=None, t
     if file.filename == '':
         return {"status": "No file selected!"}, 404
 
-    stt_url = 'http://languagesloth_tts:5001/speech_to_text'
-    tts_url = 'http://languagesloth_tts:5001/text_to_speech'
+    stt_url = 'http://languagesloth_tts:5000/speech_to_text'
+    tts_url = 'http://languagesloth_tts:5000/text_to_speech'
 
     webm_path = os.path.join(UPLOAD_FOLDER, "recording.webm")
     wav_path = os.path.join(UPLOAD_FOLDER, "recording.wav")
